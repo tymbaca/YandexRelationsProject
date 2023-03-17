@@ -18,7 +18,7 @@ class TestModel(BaseModel):
     name: str
 
 
-class Import(BaseModel):
+class Citizen(BaseModel):
     citizen_id: int
     town: str
     street: str
@@ -29,12 +29,16 @@ class Import(BaseModel):
     gender: str
     relatives: list[int]
 
-    # @validator("birth_date")
-    # def validate_birthdate(cls, value):
-    #     datetime.datetime.strptime(value, DATE_PATTERN)
-    #     return value
+    @validator("birth_date")
+    def validate_birthdate(cls, value):
+        datetime.datetime.strptime(value, DATE_PATTERN)
+        return value
+
+
+class Import(BaseModel):
+    citizens: list[Citizen]
 
 
 if __name__ == '__main__':
-    result = Import.parse_raw(test_citizen)
+    result = Citizen.parse_raw(test_citizen)
     # TestModel.parse_raw(test_model)
