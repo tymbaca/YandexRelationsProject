@@ -3,14 +3,7 @@ import datetime
 from typing import Literal
 from pydantic import BaseModel, constr, validator
 
-
-DATE_PATTERN = "%d.%m.%Y"
-
-# region tests
-with open('../../tests/citizen.json') as f:
-    test_citizen = f.read()
-
-# endregion
+import citizen_analyzer.settings as settings
 
 
 class TestModel(BaseModel):
@@ -31,7 +24,7 @@ class Citizen(BaseModel):
 
     @validator("birth_date")
     def validate_birthdate(cls, value):
-        datetime.datetime.strptime(value, DATE_PATTERN)
+        datetime.datetime.strptime(value, settings.DATE_PATTERN)
         return value
 
 
@@ -40,5 +33,4 @@ class Import(BaseModel):
 
 
 if __name__ == '__main__':
-    result = Citizen.parse_raw(test_citizen)
-    # TestModel.parse_raw(test_model)
+    pass
