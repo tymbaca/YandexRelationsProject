@@ -19,14 +19,11 @@ extra_info_generator = RussiaSpecProvider()
 
 
 class ImportGenerator:
-    def __init__(self, citizen_count: int, relative_max_count: int):
-        self.citizen_count = citizen_count
-        self.ids_dict = self.generate_ids_dict(citizen_count, relative_max_count)
-
-    def generate_import(self) -> Import:
+    def generate_import(self, citizen_count: int, relative_max_count: int = 3) -> Import:
         """Генерирует Pydantic модель импорта со случайными гражданами."""
         citizens = []
-        for citizen_id, relatives in self.ids_dict.items():
+        ids_dict = self._generate_ids_dict(citizen_count, relative_max_count)
+        for citizen_id, relatives in ids_dict.items():
             citizen = self._generate_citizen(citizen_id, relatives)
             citizens.append(citizen)
         return Import(citizens=citizens)
@@ -48,7 +45,7 @@ class ImportGenerator:
             relatives=relatives)
 
     @staticmethod
-    def generate_ids_dict(count: int, relatives_max_count: int) -> IDsDict:
+    def _generate_ids_dict(count: int, relatives_max_count: int) -> IDsDict:
         """Генерирует словарь с id родственных связей."""
         ids_dict: IDsDict = dict()
         ids = tuple(range(count))
@@ -64,18 +61,23 @@ class ImportGenerator:
 
                 # Removing current id from target list
                 ids_without_current = [id for id in ids if id != citizen_id]
-                relative_id = random.choice(ids_without_current)
+                if len(ids_without_current) > 0:
+                    relative_id = random.choice(ids_without_current)
 
-                # Add ids in both citizen and relative
-                ids_dict[citizen_id].add(relative_id)
-                ids_dict[relative_id].add(citizen_id)
+                    # Add ids in both citizen and relative
+                    ids_dict[citizen_id].add(relative_id)
+                    ids_dict[relative_id].add(citizen_id)
 
         return ids_dict
 
+    @staticmethod
+    def save_import_to_file(import_model: Import = None, path: str = "import.json") -> None:
+        with open(path, "w") as f:
+            import_json = json.dumps(import_model.dict(), ensure_ascii=False)
+            f.write(import_json)
+
 
 if __name__ == '__main__':
-    import_generator = ImportGenerator(1000, 4)
-    import1 = import_generator.generate_import()
-    with open("import.json", "w") as f:
-        import_json = json.dumps(import1.dict(), ensure_ascii=False)
-        f.write(import_json)
+    import_generator = ImportGenerator()
+    import_model = import_generator.generate_import(1)
+    import_generator.save_import_to_file(import_model)
