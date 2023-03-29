@@ -9,7 +9,6 @@ async def load_and_return_json(request: web.Request):
 
 
 async def import_citizens(request: web.Request) -> web.Response:
-    check_json(request)
     pass
 
 # endregion

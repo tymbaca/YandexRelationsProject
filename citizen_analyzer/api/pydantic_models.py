@@ -1,3 +1,4 @@
+import json
 import re
 import datetime
 from typing import Literal
@@ -30,6 +31,11 @@ class Citizen(BaseModel):
 
 class Import(BaseModel):
     citizens: list[Citizen]
+
+    def json(self, *args, **kwargs):
+        import_dict: dict = self.dict()
+        import_json = json.dumps(import_dict, ensure_ascii=False)
+        return import_json
 
 
 if __name__ == '__main__':
