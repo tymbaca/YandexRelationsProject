@@ -1,14 +1,14 @@
 import datetime
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, ForeignKey, Date
+from sqlalchemy import create_engine, String, Integer, ForeignKey, Date
+
+from citizen_analyzer import settings
 
 
 class Base(DeclarativeBase):
     pass
 
-
-# region models
 
 class Import(Base):
     __tablename__ = "import"
@@ -33,6 +33,3 @@ class Relation(Base):
     import_id: Mapped[int] = mapped_column(ForeignKey("import.id"), primary_key=True)
     citizen_id = mapped_column(ForeignKey("citizen.id"), primary_key=True)
     relative_id = mapped_column(ForeignKey("citizen.id"), primary_key=True)
-
-
-# endregion
