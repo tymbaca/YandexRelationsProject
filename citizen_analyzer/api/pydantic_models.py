@@ -7,13 +7,8 @@ from pydantic import BaseModel, constr, validator
 import citizen_analyzer.settings as settings
 
 
-class TestModel(BaseModel):
+class CitizenModel(BaseModel):
     id: int
-    name: str
-
-
-class Citizen(BaseModel):
-    citizen_id: int
     town: str
     street: str
     building: str
@@ -24,15 +19,15 @@ class Citizen(BaseModel):
     relatives: list[int]
 
     @validator("birth_date")
-    def validate_birthdate(cls, value):
+    def validate_birth_date(self, value):
         datetime.datetime.strptime(value, settings.DATE_PATTERN)
         return value
 
 
-class Import(BaseModel):
-    citizens: list[Citizen]
+class ImportModel(BaseModel):
+    citizens: list[CitizenModel]
 
-    def json(self, *args, **kwargs):
+    def json(self):
         import_dict: dict = self.dict()
         import_json = json.dumps(import_dict, ensure_ascii=False)
         return import_json
