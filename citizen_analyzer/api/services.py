@@ -20,6 +20,11 @@ def handle_import_and_return_id(import_model: pydantic_models.ImportModel) -> No
                                         birthdate=citizen.birthdate,
                                         gender=citizen.gender)
             session.add(db_citizen)
+            
+            for relative_id in citizen.relatives:
+                relation = models.Relation(import_id=db_import.id, citizen_id=citizen.id, relative_id=relative_id)
+                session.add(relation)
+
         session.commit()
         return db_import.id
 
