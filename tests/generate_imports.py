@@ -7,7 +7,7 @@ from mimesis.builtins import RussiaSpecProvider
 from mimesis.enums import Gender
 
 import tests.settings as settings
-from citizen_analyzer.api.pydantic_models import Import, Citizen
+from citizen_analyzer.api.pydantic_models import ImportModel, CitizenModel
 import tests.utils as utils
 
 IDsDict: TypeAlias = dict[int, set[int]]
@@ -19,22 +19,22 @@ extra_info_generator = RussiaSpecProvider()
 
 
 class ImportGenerator:
-    def generate_import(self, citizen_count: int, relative_max_count: int = 3) -> Import:
+    def generate_import(self, citizen_count: int, relative_max_count: int = 3) -> ImportModel:
         """Генерирует Pydantic модель импорта со случайными гражданами."""
         citizens = []
         ids_dict = self._generate_ids_dict(citizen_count, relative_max_count)
         for citizen_id, relatives in ids_dict.items():
             citizen = self._generate_citizen(citizen_id, relatives)
             citizens.append(citizen)
-        return Import(citizens=citizens)
+        return ImportModel(citizens=citizens)
 
     @staticmethod
-    def _generate_citizen(citizen_id, relatives: set[int]) -> Citizen:
+    def _generate_citizen(citizen_id, relatives: set[int]) -> CitizenModel:
         """Создает Pydantic модель гражданина со случайными данными."""
         # Selecting random gender. Need to be one gender for one citizen.
         gender: Gender = random.choice(list(Gender))
-        return Citizen(
-            citizen_id=citizen_id,
+        return CitizenModel(
+            id=citizen_id,
             town=address_generator.city(),
             street=address_generator.street_name(),
             building=address_generator.street_number(),
@@ -71,7 +71,7 @@ class ImportGenerator:
         return ids_dict
 
     @staticmethod
-    def save_import_to_file(import_model: Import = None, path: str = "import.json") -> None:
+    def save_import_to_file(import_model: ImportModel = None, path: str = "import.json") -> None:
         with open(path, "w") as f:
             import_json = json.dumps(import_model.dict(), ensure_ascii=False)
             f.write(import_json)
